@@ -1,241 +1,340 @@
 
-<h2 class="sr-only">ระบบประสานงานองค์กร — Sale, RD, ฝ่ายผลิต, HR พร้อม Export และบันทึกข้อมูล</h2>
+<h2 class="sr-only">ระบบประสานงานบริษัท อินเตอร์โอเชียนิครีซอร์สเซส จำกัด</h2>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-.app{padding:1rem 0;font-family:var(--font-sans)}
-.nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem}
-.nav-btn{padding:8px 18px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);font-size:14px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.15s}
-.nav-btn:hover{background:var(--color-background-secondary)}
-.nav-btn.active{background:var(--color-background-info);color:var(--color-text-info);border-color:var(--color-border-info);font-weight:500}
+body{font-family:var(--font-sans)}
+.app{min-height:100vh;background:var(--color-background-tertiary)}
+
+.topbar{background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:10}
+.topbar-brand{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:500;color:var(--color-text-primary)}
+.topbar-brand-icon{width:32px;height:32px;background:var(--color-background-info);border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;color:var(--color-text-info);font-size:16px}
+.topbar-right{font-size:13px;color:var(--color-text-secondary)}
+
+.layout{display:flex;min-height:calc(100vh - 56px)}
+.sidebar{width:220px;flex-shrink:0;background:var(--color-background-primary);border-right:0.5px solid var(--color-border-tertiary);padding:1.25rem 0;position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto}
+.sidebar-section{padding:0 1rem;margin-bottom:1.5rem}
+.sidebar-section-label{font-size:11px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;padding:0 8px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--border-radius-md);cursor:pointer;font-size:14px;color:var(--color-text-secondary);transition:all 0.12s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.nav-item.active{background:var(--color-background-info);color:var(--color-text-info);font-weight:500}
+.nav-item i{font-size:17px;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--color-background-secondary);color:var(--color-text-secondary);font-size:11px;padding:1px 7px;border-radius:99px}
+.nav-item.active .nav-badge{background:var(--color-background-primary);color:var(--color-text-info)}
+
+.content{flex:1;padding:2rem;overflow-x:auto}
 .panel{display:none}.panel.active{display:block}
-.section-title{font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
-.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1rem}
-.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:1rem}
-.metric-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:1rem;text-align:center}
-.metric-label{font-size:13px;color:var(--color-text-secondary);margin-bottom:4px}
-.metric-value{font-size:24px;font-weight:500;color:var(--color-text-primary)}
-label{font-size:13px;color:var(--color-text-secondary);display:block;margin-bottom:4px}
-input[type=text],input[type=number],input[type=date],select,textarea{width:100%;padding:8px 10px;font-size:14px;margin-bottom:12px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary)}
-textarea{min-height:70px;resize:vertical}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-button.btn{padding:8px 16px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);font-size:14px;cursor:pointer;transition:all 0.15s;display:inline-flex;align-items:center;gap:6px}
-button.btn:hover{background:var(--color-background-secondary)}
-button.btn-primary{background:var(--color-background-info);color:var(--color-text-info);border-color:var(--color-border-info);font-weight:500}
-button.btn-primary:hover{opacity:0.88}
-button.btn-success{background:var(--color-background-success);color:var(--color-text-success);border-color:var(--color-border-success);font-weight:500}
-button.btn-success:hover{opacity:0.88}
-button.btn-danger{color:var(--color-text-danger);border-color:var(--color-border-danger)}
-button.btn-danger:hover{background:var(--color-background-danger)}
-.badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:500}
+
+.page-header{margin-bottom:1.75rem}
+.page-title{font-size:22px;font-weight:500;color:var(--color-text-primary);display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.page-title i{font-size:22px}
+.page-subtitle{font-size:14px;color:var(--color-text-secondary)}
+
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:1.75rem}
+.metric{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.1rem 1.25rem}
+.metric-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.metric-label{font-size:12px;color:var(--color-text-secondary);font-weight:500}
+.metric-icon{width:28px;height:28px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-size:14px}
+.metric-value{font-size:26px;font-weight:500;color:var(--color-text-primary)}
+.metric-sub{font-size:12px;color:var(--color-text-secondary);margin-top:2px}
+
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);margin-bottom:1.25rem;overflow:hidden}
+.card-header{padding:1rem 1.25rem;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:15px;font-weight:500;color:var(--color-text-primary)}
+.card-body{padding:1.25rem}
+
+label{font-size:13px;color:var(--color-text-secondary);display:block;margin-bottom:5px;font-weight:500}
+input[type=text],input[type=number],input[type=date],select,textarea{width:100%;padding:9px 11px;font-size:14px;margin-bottom:14px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);transition:border-color 0.12s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--color-border-info)}
+textarea{min-height:72px;resize:vertical}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+
+.btn{padding:8px 16px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all 0.12s;font-family:var(--font-sans)}
+.btn:hover{background:var(--color-background-secondary)}
+.btn-primary{background:var(--color-background-info);color:var(--color-text-info);border-color:var(--color-border-info);font-weight:500}
+.btn-primary:hover{opacity:0.88}
+.btn-success{background:var(--color-background-success);color:var(--color-text-success);border-color:var(--color-border-success);font-weight:500;font-size:13px;padding:7px 14px}
+.btn-success:hover{opacity:0.88}
+.btn-ghost{border-color:transparent;color:var(--color-text-danger);background:none;padding:5px 8px;font-size:13px}
+.btn-ghost:hover{background:var(--color-background-danger)}
+.flex-end{display:flex;justify-content:flex-end;gap:8px;padding-top:4px}
+
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:500}
 .badge-info{background:var(--color-background-info);color:var(--color-text-info)}
 .badge-success{background:var(--color-background-success);color:var(--color-text-success)}
 .badge-warning{background:var(--color-background-warning);color:var(--color-text-warning)}
 .badge-danger{background:var(--color-background-danger);color:var(--color-text-danger)}
+.badge-gray{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+
 .table-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:14px}
-th{font-size:12px;color:var(--color-text-secondary);font-weight:500;border-bottom:0.5px solid var(--color-border-tertiary);padding:8px 10px;text-align:left}
-td{padding:10px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary);vertical-align:middle}
+th{font-size:12px;color:var(--color-text-secondary);font-weight:500;padding:10px 14px;text-align:left;border-bottom:0.5px solid var(--color-border-tertiary);white-space:nowrap}
+td{padding:12px 14px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary);vertical-align:middle}
 tr:last-child td{border-bottom:none}
-.alert{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--border-radius-md);margin-bottom:10px;font-size:14px}
+tr:hover td{background:var(--color-background-tertiary)}
+.td-name{font-weight:500}
+
+.alert{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;border-radius:var(--border-radius-md);margin-bottom:10px;font-size:14px}
+.alert i{font-size:18px;flex-shrink:0;margin-top:1px}
 .alert-warning{background:var(--color-background-warning);color:var(--color-text-warning);border:0.5px solid var(--color-border-warning)}
 .alert-danger{background:var(--color-background-danger);color:var(--color-text-danger);border:0.5px solid var(--color-border-danger)}
-.flex-end{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
-.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
-.toolbar-title{font-size:15px;font-weight:500}
-.stock-bar-bg{background:var(--color-border-tertiary);border-radius:99px;height:6px;flex:1;overflow:hidden}
-.stock-bar{height:6px;border-radius:99px}
-.save-indicator{font-size:12px;color:var(--color-text-success);display:flex;align-items:center;gap:4px}
+
+.bar-wrap{display:flex;align-items:center;gap:10px}
+.bar-bg{flex:1;background:var(--color-border-tertiary);border-radius:99px;height:6px;overflow:hidden}
+.bar-fill{height:6px;border-radius:99px}
+.bar-label{font-size:13px;font-weight:500;min-width:68px}
+
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--color-text-secondary)}
+.empty-state i{font-size:36px;display:block;margin-bottom:8px;opacity:0.4}
+.empty-state p{font-size:14px}
+
+.quota-person{margin-bottom:1.25rem}
+.quota-person-name{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.quota-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px}
+.quota-type{min-width:72px;color:var(--color-text-secondary)}
+.quota-count{min-width:72px;color:var(--color-text-primary);text-align:right}
 </style>
 
 <div class="app">
-  <nav class="nav">
-    <button class="nav-btn active" onclick="switchTab('sale',this)"><i class="ti ti-file-invoice" aria-hidden="true"></i> Sale</button>
-    <button class="nav-btn" onclick="switchTab('rd',this)"><i class="ti ti-flask" aria-hidden="true"></i> RD</button>
-    <button class="nav-btn" onclick="switchTab('production',this)"><i class="ti ti-box" aria-hidden="true"></i> ฝ่ายผลิต</button>
-    <button class="nav-btn" onclick="switchTab('hr',this)"><i class="ti ti-users" aria-hidden="true"></i> HR</button>
-  </nav>
-
-  <!-- SALE -->
-  <div id="panel-sale" class="panel active">
-    <div class="section-title"><i class="ti ti-file-invoice" aria-hidden="true"></i> ระบบเอกสาร Sale</div>
-    <div class="grid2">
-      <div class="metric-card"><div class="metric-label">เอกสารทั้งหมด</div><div class="metric-value" id="sale-count">0</div></div>
-      <div class="metric-card"><div class="metric-label">ลูกค้าทั้งหมด</div><div class="metric-value" id="cust-count">0</div></div>
-      <div class="metric-card"><div class="metric-label">มูลค่ารวม (฿)</div><div class="metric-value" id="sale-total">0</div></div>
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-brand-icon"><i class="ti ti-building" aria-hidden="true"></i></div>
+      ระบบประสานงานภายใน
     </div>
-    <div class="card">
-      <div class="toolbar-title" style="margin-bottom:12px">เพิ่มเอกสารใหม่</div>
-      <div class="form-row">
-        <div><label>ชื่อลูกค้า</label><input type="text" id="s-customer" placeholder="เช่น บริษัท ABC"></div>
-        <div><label>ประเภทเอกสาร</label><select id="s-type"><option>PO</option><option>ใบเสนอราคา</option><option>สัญญา</option><option>อื่นๆ</option></select></div>
-      </div>
-      <div class="form-row">
-        <div><label>เลขที่เอกสาร</label><input type="text" id="s-docno" placeholder="เช่น PO-2025-001"></div>
-        <div><label>มูลค่า (บาท)</label><input type="number" id="s-amount" placeholder="0"></div>
-      </div>
-      <label>หมายเหตุ / ข้อมูลสำคัญ</label>
-      <textarea id="s-note" placeholder="ข้อมูลเพิ่มเติมของลูกค้า"></textarea>
-      <div class="flex-end">
-        <button class="btn btn-primary" onclick="addSaleDoc()"><i class="ti ti-plus" aria-hidden="true"></i> บันทึกเอกสาร</button>
-      </div>
-    </div>
-    <div class="card">
-      <div class="toolbar">
-        <span class="toolbar-title">รายการเอกสาร</span>
-        <button class="btn btn-success" onclick="exportExcel('sale')"><i class="ti ti-file-spreadsheet" aria-hidden="true"></i> Export Excel</button>
-      </div>
-      <div class="table-wrap">
-        <table><thead><tr><th>ลูกค้า</th><th>ประเภท</th><th>เลขที่</th><th>มูลค่า</th><th>หมายเหตุ</th><th></th></tr></thead>
-        <tbody id="sale-table"><tr><td colspan="6" style="text-align:center;color:var(--color-text-secondary);padding:1.5rem">ยังไม่มีเอกสาร</td></tr></tbody></table>
-      </div>
-    </div>
+    <div class="topbar-right" id="save-status"></div>
   </div>
 
-  <!-- RD -->
-  <div id="panel-rd" class="panel">
-    <div class="section-title"><i class="ti ti-flask" aria-hidden="true"></i> ระบบ RD — ต้นทุน & ตัวอย่าง</div>
-    <div class="card">
-      <div class="toolbar-title" style="margin-bottom:12px">บันทึกงาน RD</div>
-      <div class="form-row">
-        <div><label>วันที่</label><input type="date" id="rd-date"></div>
-        <div><label>ชื่อผลิตภัณฑ์ / ตัวอย่าง</label><input type="text" id="rd-name" placeholder="เช่น สูตร A-01"></div>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">ฝ่าย/แผนก</div>
+        <button class="nav-item active" onclick="switchTab('sale',this)">
+          <i class="ti ti-file-invoice" aria-hidden="true"></i> Sale
+          <span class="nav-badge" id="nb-sale">0</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('rd',this)">
+          <i class="ti ti-flask" aria-hidden="true"></i> RD
+          <span class="nav-badge" id="nb-rd">0</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('production',this)">
+          <i class="ti ti-box" aria-hidden="true"></i> ฝ่ายผลิต
+          <span class="nav-badge" id="nb-stock">0</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('hr',this)">
+          <i class="ti ti-users" aria-hidden="true"></i> HR
+          <span class="nav-badge" id="nb-hr">0</span>
+        </button>
       </div>
-      <div class="form-row">
-        <div><label>ต้นทุน (บาท/กก.)</label><input type="number" id="rd-cost" placeholder="0"></div>
-        <div><label>ราคาที่ขอ (บาท/กก.)</label><input type="number" id="rd-price" placeholder="0"></div>
-      </div>
-      <label>รายละเอียดตัวอย่าง</label>
-      <textarea id="rd-detail" placeholder="บันทึกผลการทดลอง สูตร วัตถุดิบที่ใช้..."></textarea>
-      <div class="flex-end"><button class="btn btn-primary" onclick="addRD()"><i class="ti ti-plus" aria-hidden="true"></i> บันทึก</button></div>
-    </div>
-    <div class="card">
-      <div class="toolbar">
-        <span class="toolbar-title">ประวัติงาน RD</span>
-        <button class="btn btn-success" onclick="exportExcel('rd')"><i class="ti ti-file-spreadsheet" aria-hidden="true"></i> Export Excel</button>
-      </div>
-      <div class="table-wrap">
-        <table><thead><tr><th>วันที่</th><th>ผลิตภัณฑ์</th><th>ต้นทุน</th><th>ราคาขอ</th><th>Margin%</th><th>รายละเอียด</th><th></th></tr></thead>
-        <tbody id="rd-table"><tr><td colspan="7" style="text-align:center;color:var(--color-text-secondary);padding:1.5rem">ยังไม่มีข้อมูล</td></tr></tbody></table>
-      </div>
-    </div>
-  </div>
+    </aside>
 
-  <!-- PRODUCTION -->
-  <div id="panel-production" class="panel">
-    <div class="section-title"><i class="ti ti-box" aria-hidden="true"></i> เช็คสต๊อกสินค้า</div>
-    <div id="stock-alerts"></div>
-    <div class="card">
-      <div class="toolbar-title" style="margin-bottom:12px">เพิ่ม / อัพเดทสินค้า</div>
-      <div class="form-row">
-        <div><label>ชื่อวัตถุดิบ / สินค้า</label><input type="text" id="p-name" placeholder="เช่น แป้งสาลี"></div>
-        <div><label>คงเหลือ (กิโลกรัม)</label><input type="number" id="p-stock" placeholder="0" step="0.1"></div>
-      </div>
-      <div class="form-row">
-        <div><label>หน่วย</label><select id="p-unit"><option>กก.</option><option>ลิตร</option><option>ชิ้น</option><option>ถุง</option></select></div>
-        <div><label>หมวดหมู่</label><select id="p-cat"><option>วัตถุดิบ</option><option>บรรจุภัณฑ์</option><option>สินค้าสำเร็จรูป</option></select></div>
-      </div>
-      <div class="flex-end"><button class="btn btn-primary" onclick="addStock()"><i class="ti ti-plus" aria-hidden="true"></i> บันทึกสต๊อก</button></div>
-    </div>
-    <div class="card">
-      <div class="toolbar">
-        <span class="toolbar-title">รายการสต๊อก</span>
-        <button class="btn btn-success" onclick="exportExcel('stock')"><i class="ti ti-file-spreadsheet" aria-hidden="true"></i> Export Excel</button>
-      </div>
-      <div class="table-wrap">
-        <table><thead><tr><th>รายการ</th><th>หมวดหมู่</th><th>คงเหลือ</th><th>สถานะ</th><th></th></tr></thead>
-        <tbody id="stock-table"><tr><td colspan="5" style="text-align:center;color:var(--color-text-secondary);padding:1.5rem">ยังไม่มีข้อมูลสต๊อก</td></tr></tbody></table>
-      </div>
-    </div>
-  </div>
+    <main class="content">
 
-  <!-- HR -->
-  <div id="panel-hr" class="panel">
-    <div class="section-title"><i class="ti ti-users" aria-hidden="true"></i> ระบบ HR — การลา</div>
-    <div class="grid2">
-      <div class="metric-card"><div class="metric-label">ลาเดือนนี้ (วัน)</div><div class="metric-value" id="hr-total">0</div></div>
-      <div class="metric-card"><div class="metric-label">จำนวนพนักงาน</div><div class="metric-value" id="hr-emp-count">0</div></div>
-    </div>
-    <div class="card">
-      <div class="toolbar-title" style="margin-bottom:12px">บันทึกการลา</div>
-      <div class="form-row">
-        <div><label>ชื่อพนักงาน</label><input type="text" id="hr-name" placeholder="ชื่อ-นามสกุล"></div>
-        <div><label>ประเภทการลา</label><select id="hr-type"><option>ลาป่วย</option><option>ลากิจ</option><option>ลาพักร้อน</option><option>ลาคลอด</option></select></div>
+      <!-- SALE -->
+      <div id="panel-sale" class="panel active">
+        <div class="page-header">
+          <div class="page-title"><i class="ti ti-file-invoice" aria-hidden="true"></i> Sale — เอกสารลูกค้า</div>
+          <div class="page-subtitle">รวบรวมใบ PO, ใบเสนอราคา และเอกสารสำคัญของลูกค้าแต่ละราย</div>
+        </div>
+        <div class="metrics-row">
+          <div class="metric">
+            <div class="metric-top"><span class="metric-label">เอกสารทั้งหมด</span><div class="metric-icon" style="background:var(--color-background-info);color:var(--color-text-info)"><i class="ti ti-files" aria-hidden="true"></i></div></div>
+            <div class="metric-value" id="m-sale-count">0</div>
+          </div>
+          <div class="metric">
+            <div class="metric-top"><span class="metric-label">ลูกค้าทั้งหมด</span><div class="metric-icon" style="background:var(--color-background-success);color:var(--color-text-success)"><i class="ti ti-building-store" aria-hidden="true"></i></div></div>
+            <div class="metric-value" id="m-cust-count">0</div>
+          </div>
+          <div class="metric">
+            <div class="metric-top"><span class="metric-label">มูลค่ารวม</span><div class="metric-icon" style="background:var(--color-background-warning);color:var(--color-text-warning)"><i class="ti ti-currency-baht" aria-hidden="true"></i></div></div>
+            <div class="metric-value" id="m-sale-total">0</div>
+            <div class="metric-sub">บาท</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">เพิ่มเอกสารใหม่</span></div>
+          <div class="card-body">
+            <div class="form-grid">
+              <div><label>ชื่อลูกค้า</label><input type="text" id="s-customer" placeholder="เช่น บริษัท ABC จำกัด"></div>
+              <div><label>ประเภทเอกสาร</label><select id="s-type"><option>PO</option><option>ใบเสนอราคา</option><option>สัญญา</option><option>อื่นๆ</option></select></div>
+            </div>
+            <div class="form-grid">
+              <div><label>เลขที่เอกสาร</label><input type="text" id="s-docno" placeholder="เช่น PO-2025-001"></div>
+              <div><label>มูลค่า (บาท)</label><input type="number" id="s-amount" placeholder="0"></div>
+            </div>
+            <label>หมายเหตุ / ข้อมูลสำคัญ</label>
+            <textarea id="s-note" placeholder="ข้อมูลเพิ่มเติมของลูกค้า เงื่อนไขพิเศษ ฯลฯ"></textarea>
+            <div class="flex-end"><button class="btn btn-primary" onclick="addSaleDoc()"><i class="ti ti-plus" aria-hidden="true"></i> บันทึกเอกสาร</button></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">รายการเอกสารทั้งหมด</span>
+            <button class="btn btn-success" onclick="exportExcel('sale')"><i class="ti ti-file-spreadsheet" aria-hidden="true"></i> Export Excel</button>
+          </div>
+          <div class="table-wrap">
+            <table><thead><tr><th>ลูกค้า</th><th>ประเภท</th><th>เลขที่</th><th>มูลค่า</th><th>หมายเหตุ</th><th></th></tr></thead>
+            <tbody id="sale-table"></tbody></table>
+          </div>
+        </div>
       </div>
-      <div class="form-row">
-        <div><label>วันที่เริ่มลา</label><input type="date" id="hr-start"></div>
-        <div><label>วันที่กลับ</label><input type="date" id="hr-end"></div>
+
+      <!-- RD -->
+      <div id="panel-rd" class="panel">
+        <div class="page-header">
+          <div class="page-title"><i class="ti ti-flask" aria-hidden="true"></i> RD — ต้นทุน & ตัวอย่าง</div>
+          <div class="page-subtitle">บันทึกต้นทุน การขอราคา และตัวอย่างที่จัดทำในแต่ละวัน</div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">บันทึกงาน RD</span></div>
+          <div class="card-body">
+            <div class="form-grid">
+              <div><label>วันที่</label><input type="date" id="rd-date"></div>
+              <div><label>ชื่อผลิตภัณฑ์ / ตัวอย่าง</label><input type="text" id="rd-name" placeholder="เช่น สูตร A-01"></div>
+            </div>
+            <div class="form-grid">
+              <div><label>ต้นทุน (บาท/กก.)</label><input type="number" id="rd-cost" placeholder="0"></div>
+              <div><label>ราคาที่ขอ (บาท/กก.)</label><input type="number" id="rd-price" placeholder="0"></div>
+            </div>
+            <label>รายละเอียดตัวอย่างที่จัดทำ</label>
+            <textarea id="rd-detail" placeholder="บันทึกผลการทดลอง สูตร วัตถุดิบที่ใช้..."></textarea>
+            <div class="flex-end"><button class="btn btn-primary" onclick="addRD()"><i class="ti ti-plus" aria-hidden="true"></i> บันทึก</button></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">ประวัติงาน RD</span>
+            <button class="btn btn-success" onclick="exportExcel('rd')"><i class="ti ti-file-spreadsheet" aria-hidden="true"></i> Export Excel</button>
+          </div>
+          <div class="table-wrap">
+            <table><thead><tr><th>วันที่</th><th>ผลิตภัณฑ์</th><th>ต้นทุน</th><th>ราคาขอ</th><th>Margin</th><th>รายละเอียด</th><th></th></tr></thead>
+            <tbody id="rd-table"></tbody></table>
+          </div>
+        </div>
       </div>
-      <div class="flex-end"><button class="btn btn-primary" onclick="addLeave()"><i class="ti ti-calendar-plus" aria-hidden="true"></i> บันทึกการลา</button></div>
-    </div>
-    <div class="card">
-      <div class="toolbar">
-        <span class="toolbar-title">รายการการลา</span>
-        <button class="btn btn-success" onclick="exportExcel('hr')"><i class="ti ti-file-spreadsheet" aria-hidden="true"></i> Export Excel</button>
+
+      <!-- PRODUCTION -->
+      <div id="panel-production" class="panel">
+        <div class="page-header">
+          <div class="page-title"><i class="ti ti-box" aria-hidden="true"></i> ฝ่ายผลิต — สต๊อกสินค้า</div>
+          <div class="page-subtitle">ตรวจสอบสต๊อกวัตถุดิบ — แจ้งเตือนเมื่อคงเหลือน้อยกว่า 10 กก.</div>
+        </div>
+        <div id="stock-alerts"></div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">เพิ่ม / อัพเดทสินค้า</span></div>
+          <div class="card-body">
+            <div class="form-grid-3">
+              <div><label>ชื่อวัตถุดิบ / สินค้า</label><input type="text" id="p-name" placeholder="เช่น แป้งสาลี"></div>
+              <div><label>คงเหลือ</label><input type="number" id="p-stock" placeholder="0" step="0.1"></div>
+              <div><label>หน่วย</label><select id="p-unit"><option>กก.</option><option>ลิตร</option><option>ชิ้น</option><option>ถุง</option></select></div>
+            </div>
+            <div><label>หมวดหมู่</label><select id="p-cat"><option>วัตถุดิบ</option><option>บรรจุภัณฑ์</option><option>สินค้าสำเร็จรูป</option></select></div>
+            <div class="flex-end"><button class="btn btn-primary" onclick="addStock()"><i class="ti ti-plus" aria-hidden="true"></i> บันทึกสต๊อก</button></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">รายการสต๊อก</span>
+            <button class="btn btn-success" onclick="exportExcel('stock')"><i class="ti ti-file-spreadsheet" aria-hidden="true"></i> Export Excel</button>
+          </div>
+          <div class="table-wrap">
+            <table><thead><tr><th>รายการ</th><th>หมวดหมู่</th><th>คงเหลือ</th><th>สถานะ</th><th></th></tr></thead>
+            <tbody id="stock-table"></tbody></table>
+          </div>
+        </div>
       </div>
-      <div class="table-wrap">
-        <table><thead><tr><th>พนักงาน</th><th>ประเภท</th><th>วันที่เริ่ม</th><th>วันที่กลับ</th><th>จำนวน (วัน)</th><th>โควต้าคงเหลือ</th><th></th></tr></thead>
-        <tbody id="hr-table"><tr><td colspan="7" style="text-align:center;color:var(--color-text-secondary);padding:1.5rem">ยังไม่มีข้อมูลการลา</td></tr></tbody></table>
+
+      <!-- HR -->
+      <div id="panel-hr" class="panel">
+        <div class="page-header">
+          <div class="page-title"><i class="ti ti-users" aria-hidden="true"></i> HR — การลาพนักงาน</div>
+          <div class="page-subtitle">บันทึกการลาและหักวันลาอัตโนมัติตามโควต้าแต่ละประเภท</div>
+        </div>
+        <div class="metrics-row">
+          <div class="metric">
+            <div class="metric-top"><span class="metric-label">วันลารวมเดือนนี้</span><div class="metric-icon" style="background:var(--color-background-warning);color:var(--color-text-warning)"><i class="ti ti-calendar-off" aria-hidden="true"></i></div></div>
+            <div class="metric-value" id="m-hr-total">0</div>
+            <div class="metric-sub">วัน</div>
+          </div>
+          <div class="metric">
+            <div class="metric-top"><span class="metric-label">จำนวนพนักงาน</span><div class="metric-icon" style="background:var(--color-background-info);color:var(--color-text-info)"><i class="ti ti-user-check" aria-hidden="true"></i></div></div>
+            <div class="metric-value" id="m-hr-emp">0</div>
+            <div class="metric-sub">คน</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">บันทึกการลา</span></div>
+          <div class="card-body">
+            <div class="form-grid">
+              <div><label>ชื่อพนักงาน</label><input type="text" id="hr-name" placeholder="ชื่อ-นามสกุล"></div>
+              <div><label>ประเภทการลา</label><select id="hr-type"><option>ลาป่วย</option><option>ลากิจ</option><option>ลาพักร้อน</option><option>ลาคลอด</option></select></div>
+            </div>
+            <div class="form-grid">
+              <div><label>วันที่เริ่มลา</label><input type="date" id="hr-start"></div>
+              <div><label>วันที่กลับมาทำงาน</label><input type="date" id="hr-end"></div>
+            </div>
+            <div class="flex-end"><button class="btn btn-primary" onclick="addLeave()"><i class="ti ti-calendar-plus" aria-hidden="true"></i> บันทึกการลา</button></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">รายการการลา</span>
+            <button class="btn btn-success" onclick="exportExcel('hr')"><i class="ti ti-file-spreadsheet" aria-hidden="true"></i> Export Excel</button>
+          </div>
+          <div class="table-wrap">
+            <table><thead><tr><th>พนักงาน</th><th>ประเภท</th><th>วันที่เริ่ม</th><th>วันที่กลับ</th><th>จำนวน</th><th>โควต้าคงเหลือ</th><th></th></tr></thead>
+            <tbody id="hr-table"></tbody></table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">สรุปโควต้าวันลาต่อพนักงาน</span></div>
+          <div class="card-body" id="hr-quota"></div>
+        </div>
       </div>
-    </div>
-    <div class="card">
-      <div class="toolbar-title" style="margin-bottom:12px">สรุปโควต้าวันลาต่อพนักงาน</div>
-      <div id="hr-quota-summary" style="color:var(--color-text-secondary);font-size:14px">ยังไม่มีข้อมูล</div>
-    </div>
+
+    </main>
   </div>
 </div>
 
 <script>
-const LEAVE_QUOTA = {'ลาป่วย':30,'ลากิจ':3,'ลาพักร้อน':6,'ลาคลอด':98};
-const SAVE_KEY = 'orgCoordData_v2';
+const QUOTA={'ลาป่วย':30,'ลากิจ':3,'ลาพักร้อน':6,'ลาคลอด':98};
+const SAVE_KEY='orgCoord_v3';
+let saleData=[],rdData=[],stockData=[],hrData=[];
 
-let saleData=[], rdData=[], stockData=[], hrData=[];
+function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({saleData,rdData,stockData,hrData}));showSaved();}catch(e){}}
+function load(){try{const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'{}');saleData=d.saleData||[];rdData=d.rdData||[];stockData=d.stockData||[];hrData=d.hrData||[];}catch(e){}}
+function showSaved(){const el=document.getElementById('save-status');el.textContent='บันทึกแล้ว ✓';setTimeout(()=>el.textContent='',2000);}
 
-function save() {
-  try { localStorage.setItem(SAVE_KEY, JSON.stringify({saleData,rdData,stockData,hrData})); } catch(e){}
-}
-function load() {
-  try {
-    const d = JSON.parse(localStorage.getItem(SAVE_KEY)||'{}');
-    saleData = d.saleData||[]; rdData = d.rdData||[];
-    stockData = d.stockData||[]; hrData = d.hrData||[];
-  } catch(e){}
-}
-
-function switchTab(tab, btn) {
+function switchTab(tab,btn){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
   document.getElementById('panel-'+tab).classList.add('active');
   btn.classList.add('active');
 }
 
-// EXPORT EXCEL
-function exportExcel(type) {
-  let ws, name;
-  if (type==='sale') {
-    const rows = saleData.map(x=>({'ลูกค้า':x.c,'ประเภท':x.t,'เลขที่เอกสาร':x.d,'มูลค่า (฿)':x.a,'หมายเหตุ':x.n}));
-    ws = XLSX.utils.json_to_sheet(rows.length ? rows : [{'ลูกค้า':'ไม่มีข้อมูล'}]);
-    name = 'Sale_Documents';
-  } else if (type==='rd') {
-    const rows = rdData.map(x=>({'วันที่':x.date,'ผลิตภัณฑ์':x.name,'ต้นทุน (฿/กก.)':x.cost,'ราคาขอ (฿/กก.)':x.price,'Margin %':x.price&&x.cost?(((x.price-x.cost)/x.price)*100).toFixed(1)+' %':'-','รายละเอียด':x.detail}));
-    ws = XLSX.utils.json_to_sheet(rows.length ? rows : [{'ผลิตภัณฑ์':'ไม่มีข้อมูล'}]);
-    name = 'RD_Records';
-  } else if (type==='stock') {
-    const rows = stockData.map(x=>({'รายการ':x.name,'หมวดหมู่':x.cat,'คงเหลือ':x.qty,'หน่วย':x.unit,'สถานะ':x.qty<=0?'หมดสต๊อก':x.qty<10?'ต่ำกว่าเกณฑ์':'ปกติ'}));
-    ws = XLSX.utils.json_to_sheet(rows.length ? rows : [{'รายการ':'ไม่มีข้อมูล'}]);
-    name = 'Stock';
-  } else {
-    const rows = hrData.map(x=>({'พนักงาน':x.name,'ประเภทการลา':x.type,'วันที่เริ่ม':x.start,'วันที่กลับ':x.end,'จำนวน (วัน)':x.days}));
-    ws = XLSX.utils.json_to_sheet(rows.length ? rows : [{'พนักงาน':'ไม่มีข้อมูล'}]);
-    name = 'HR_Leave';
-  }
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, name);
-  XLSX.writeFile(wb, name+'_'+new Date().toISOString().slice(0,10)+'.xlsx');
+function updateBadges(){
+  document.getElementById('nb-sale').textContent=saleData.length;
+  document.getElementById('nb-rd').textContent=rdData.length;
+  document.getElementById('nb-stock').textContent=stockData.length;
+  document.getElementById('nb-hr').textContent=hrData.length;
+}
+
+function emptyRow(cols){return`<tr><td colspan="${cols}"><div class="empty-state"><i class="ti ti-inbox" aria-hidden="true"></i><p>ยังไม่มีข้อมูล</p></div></td></tr>`;}
+
+function exportExcel(type){
+  let rows,name;
+  if(type==='sale'){rows=saleData.map(x=>({'ลูกค้า':x.c,'ประเภท':x.t,'เลขที่':x.d,'มูลค่า':x.a,'หมายเหตุ':x.n}));name='Sale';}
+  else if(type==='rd'){rows=rdData.map(x=>({'วันที่':x.date,'ผลิตภัณฑ์':x.name,'ต้นทุน':x.cost,'ราคาขอ':x.price,'Margin%':x.price&&x.cost?(((x.price-x.cost)/x.price)*100).toFixed(1):'','รายละเอียด':x.detail}));name='RD';}
+  else if(type==='stock'){rows=stockData.map(x=>({'รายการ':x.name,'หมวดหมู่':x.cat,'คงเหลือ':x.qty,'หน่วย':x.unit}));name='Stock';}
+  else{rows=hrData.map(x=>({'พนักงาน':x.name,'ประเภท':x.type,'เริ่ม':x.start,'กลับ':x.end,'วัน':x.days}));name='HR';}
+  if(!rows.length)rows=[{ข้อมูล:'ไม่มี'}];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),name);
+  XLSX.writeFile(wb,name+'_'+new Date().toISOString().slice(0,10)+'.xlsx');
 }
 
 // SALE
-function addSaleDoc() {
+function addSaleDoc(){
   const c=document.getElementById('s-customer').value.trim();
   const t=document.getElementById('s-type').value;
   const d=document.getElementById('s-docno').value.trim();
@@ -244,28 +343,28 @@ function addSaleDoc() {
   if(!c||!d){alert('กรุณากรอกชื่อลูกค้าและเลขที่เอกสาร');return;}
   saleData.push({c,t,d,a,n,id:Date.now()});
   ['s-customer','s-docno','s-amount','s-note'].forEach(id=>document.getElementById(id).value='');
-  save(); renderSale();
+  save();renderSale();
 }
 function deleteSale(id){saleData=saleData.filter(x=>x.id!==id);save();renderSale();}
-function renderSale() {
+function renderSale(){
   const tb=document.getElementById('sale-table');
-  document.getElementById('sale-count').textContent=saleData.length;
-  document.getElementById('cust-count').textContent=new Set(saleData.map(x=>x.c)).size;
-  const tot=saleData.reduce((s,x)=>s+x.a,0);
-  document.getElementById('sale-total').textContent=tot?tot.toLocaleString():'0';
-  if(!saleData.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--color-text-secondary);padding:1.5rem">ยังไม่มีเอกสาร</td></tr>';return;}
+  document.getElementById('m-sale-count').textContent=saleData.length;
+  document.getElementById('m-cust-count').textContent=new Set(saleData.map(x=>x.c)).size;
+  document.getElementById('m-sale-total').textContent=saleData.reduce((s,x)=>s+x.a,0).toLocaleString();
+  updateBadges();
+  if(!saleData.length){tb.innerHTML=emptyRow(6);return;}
   tb.innerHTML=saleData.map(x=>`<tr>
-    <td style="font-weight:500">${x.c}</td>
+    <td class="td-name">${x.c}</td>
     <td><span class="badge badge-info">${x.t}</span></td>
     <td>${x.d}</td>
     <td>${x.a?x.a.toLocaleString()+' ฿':'-'}</td>
-    <td style="color:var(--color-text-secondary);font-size:13px">${x.n||'-'}</td>
-    <td><button class="btn btn-danger" style="font-size:12px;padding:4px 10px" onclick="deleteSale(${x.id})"><i class="ti ti-trash" aria-hidden="true"></i></button></td>
+    <td style="color:var(--color-text-secondary);font-size:13px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.n||'-'}</td>
+    <td><button class="btn btn-ghost" onclick="deleteSale(${x.id})"><i class="ti ti-trash" aria-hidden="true"></i></button></td>
   </tr>`).join('');
 }
 
 // RD
-function addRD() {
+function addRD(){
   const date=document.getElementById('rd-date').value;
   const name=document.getElementById('rd-name').value.trim();
   const cost=parseFloat(document.getElementById('rd-cost').value)||0;
@@ -274,29 +373,30 @@ function addRD() {
   if(!name){alert('กรุณากรอกชื่อผลิตภัณฑ์');return;}
   rdData.push({date,name,cost,price,detail,id:Date.now()});
   ['rd-name','rd-cost','rd-price','rd-detail'].forEach(id=>document.getElementById(id).value='');
-  save(); renderRD();
+  save();renderRD();
 }
 function deleteRD(id){rdData=rdData.filter(x=>x.id!==id);save();renderRD();}
-function renderRD() {
+function renderRD(){
   const tb=document.getElementById('rd-table');
-  if(!rdData.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--color-text-secondary);padding:1.5rem">ยังไม่มีข้อมูล</td></tr>';return;}
+  updateBadges();
+  if(!rdData.length){tb.innerHTML=emptyRow(7);return;}
   tb.innerHTML=rdData.map(x=>{
     const m=x.price&&x.cost?(((x.price-x.cost)/x.price)*100).toFixed(1):null;
-    const mc=m?(parseFloat(m)>=20?'badge-success':parseFloat(m)>=0?'badge-warning':'badge-danger'):'badge-info';
-    return `<tr>
-      <td style="font-size:13px">${x.date||'-'}</td>
-      <td style="font-weight:500">${x.name}</td>
-      <td>${x.cost?x.cost.toLocaleString():'-'}</td>
-      <td>${x.price?x.price.toLocaleString():'-'}</td>
+    const mc=m?(+m>=20?'badge-success':+m>=0?'badge-warning':'badge-danger'):'badge-gray';
+    return`<tr>
+      <td style="font-size:13px;color:var(--color-text-secondary)">${x.date||'-'}</td>
+      <td class="td-name">${x.name}</td>
+      <td>${x.cost?x.cost.toLocaleString()+' ฿':'-'}</td>
+      <td>${x.price?x.price.toLocaleString()+' ฿':'-'}</td>
       <td><span class="badge ${mc}">${m?m+'%':'-'}</span></td>
       <td style="font-size:13px;color:var(--color-text-secondary);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.detail||'-'}</td>
-      <td><button class="btn btn-danger" style="font-size:12px;padding:4px 10px" onclick="deleteRD(${x.id})"><i class="ti ti-trash" aria-hidden="true"></i></button></td>
+      <td><button class="btn btn-ghost" onclick="deleteRD(${x.id})"><i class="ti ti-trash" aria-hidden="true"></i></button></td>
     </tr>`;
   }).join('');
 }
 
 // STOCK
-function addStock() {
+function addStock(){
   const name=document.getElementById('p-name').value.trim();
   const qty=parseFloat(document.getElementById('p-stock').value);
   const unit=document.getElementById('p-unit').value;
@@ -305,35 +405,35 @@ function addStock() {
   const i=stockData.findIndex(x=>x.name===name);
   if(i>=0){stockData[i].qty=qty;stockData[i].unit=unit;stockData[i].cat=cat;}
   else stockData.push({name,qty,unit,cat,id:Date.now()});
-  document.getElementById('p-name').value='';
-  document.getElementById('p-stock').value='';
-  save(); renderStock();
+  document.getElementById('p-name').value='';document.getElementById('p-stock').value='';
+  save();renderStock();
 }
 function deleteStock(id){stockData=stockData.filter(x=>x.id!==id);save();renderStock();}
-function renderStock() {
+function renderStock(){
   const tb=document.getElementById('stock-table');
   const ab=document.getElementById('stock-alerts');
+  updateBadges();
   const low=stockData.filter(x=>x.qty<10);
-  ab.innerHTML=low.length?low.map(x=>`<div class="alert ${x.qty<=0?'alert-danger':'alert-warning'}"><i class="ti ti-alert-triangle" aria-hidden="true"></i> <strong>${x.name}</strong> คงเหลือ ${x.qty} ${x.unit} — ${x.qty<=0?'หมดสต๊อก!':'ต่ำกว่า 10 กก. กรุณาสั่งซื้อเพิ่ม'}</div>`).join(''):'';
-  if(!stockData.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--color-text-secondary);padding:1.5rem">ยังไม่มีข้อมูลสต๊อก</td></tr>';return;}
+  ab.innerHTML=low.map(x=>`<div class="alert ${x.qty<=0?'alert-danger':'alert-warning'}"><i class="ti ti-alert-triangle" aria-hidden="true"></i><div><strong>${x.name}</strong> — คงเหลือ ${x.qty} ${x.unit} ${x.qty<=0?'(หมดสต๊อก! กรุณาสั่งซื้อด่วน)':'(ต่ำกว่า 10 กก. กรุณาสั่งซื้อเพิ่ม)'}</div></div>`).join('');
+  if(!stockData.length){tb.innerHTML=emptyRow(5);return;}
   const mx=Math.max(...stockData.map(x=>x.qty),100);
   tb.innerHTML=stockData.map(x=>{
     const pct=Math.min(100,(x.qty/mx)*100);
     const col=x.qty<=0?'#E24B4A':x.qty<10?'#EF9F27':'#1D9E75';
     const badge=x.qty<=0?'<span class="badge badge-danger">หมด</span>':x.qty<10?'<span class="badge badge-warning">ต่ำ</span>':'<span class="badge badge-success">ปกติ</span>';
-    return `<tr>
-      <td style="font-weight:500">${x.name}</td>
-      <td><span class="badge badge-info">${x.cat}</span></td>
-      <td><div style="display:flex;align-items:center;gap:8px"><div class="stock-bar-bg"><div class="stock-bar" style="width:${pct}%;background:${col}"></div></div><span style="font-size:13px;font-weight:500;min-width:60px">${x.qty} ${x.unit}</span></div></td>
+    return`<tr>
+      <td class="td-name">${x.name}</td>
+      <td><span class="badge badge-gray">${x.cat}</span></td>
+      <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div><span class="bar-label">${x.qty} ${x.unit}</span></div></td>
       <td>${badge}</td>
-      <td><button class="btn btn-danger" style="font-size:12px;padding:4px 10px" onclick="deleteStock(${x.id})"><i class="ti ti-trash" aria-hidden="true"></i></button></td>
+      <td><button class="btn btn-ghost" onclick="deleteStock(${x.id})"><i class="ti ti-trash" aria-hidden="true"></i></button></td>
     </tr>`;
   }).join('');
 }
 
 // HR
-function calcDays(s,e){if(!s||!e)return 0;return Math.max(1,Math.round((new Date(e)-new Date(s))/86400000)+1);}
-function addLeave() {
+function calcDays(s,e){return Math.max(1,Math.round((new Date(e)-new Date(s))/86400000)+1);}
+function addLeave(){
   const name=document.getElementById('hr-name').value.trim();
   const type=document.getElementById('hr-type').value;
   const start=document.getElementById('hr-start').value;
@@ -342,55 +442,57 @@ function addLeave() {
   if(new Date(end)<new Date(start)){alert('วันที่กลับต้องไม่ก่อนวันที่เริ่มลา');return;}
   hrData.push({name,type,start,end,days:calcDays(start,end),id:Date.now()});
   ['hr-name','hr-start','hr-end'].forEach(id=>document.getElementById(id).value='');
-  save(); renderHR();
+  save();renderHR();
 }
 function deleteLeave(id){hrData=hrData.filter(x=>x.id!==id);save();renderHR();}
-function renderHR() {
+function renderHR(){
   const tb=document.getElementById('hr-table');
   const tot=hrData.reduce((s,x)=>s+x.days,0);
-  document.getElementById('hr-total').textContent=tot;
-  document.getElementById('hr-emp-count').textContent=new Set(hrData.map(x=>x.name)).size;
+  document.getElementById('m-hr-total').textContent=tot;
+  document.getElementById('m-hr-emp').textContent=new Set(hrData.map(x=>x.name)).size;
+  updateBadges();
   const typeBadge={'ลาป่วย':'badge-danger','ลากิจ':'badge-warning','ลาพักร้อน':'badge-success','ลาคลอด':'badge-info'};
   if(!hrData.length){
-    tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--color-text-secondary);padding:1.5rem">ยังไม่มีข้อมูลการลา</td></tr>';
-    document.getElementById('hr-quota-summary').innerHTML='<span style="color:var(--color-text-secondary);font-size:14px">ยังไม่มีข้อมูล</span>';
+    tb.innerHTML=emptyRow(7);
+    document.getElementById('hr-quota').innerHTML='<p style="color:var(--color-text-secondary);font-size:14px">ยังไม่มีข้อมูล</p>';
     return;
   }
   tb.innerHTML=hrData.sort((a,b)=>a.name.localeCompare(b.name,'th')).map(x=>{
     const used=hrData.filter(h=>h.name===x.name&&h.type===x.type).reduce((s,h)=>s+h.days,0);
-    const rem=Math.max(0,(LEAVE_QUOTA[x.type]||0)-used);
-    const remColor=rem===0?'var(--color-text-danger)':rem<=2?'var(--color-text-warning)':'var(--color-text-success)';
-    return `<tr>
-      <td style="font-weight:500">${x.name}</td>
-      <td><span class="badge ${typeBadge[x.type]||'badge-info'}">${x.type}</span></td>
+    const quota=QUOTA[x.type]||0;
+    const rem=Math.max(0,quota-used);
+    const rc=rem===0?'var(--color-text-danger)':rem<=2?'var(--color-text-warning)':'var(--color-text-success)';
+    return`<tr>
+      <td class="td-name">${x.name}</td>
+      <td><span class="badge ${typeBadge[x.type]||'badge-gray'}">${x.type}</span></td>
       <td style="font-size:13px">${x.start}</td>
       <td style="font-size:13px">${x.end}</td>
-      <td style="font-weight:500;text-align:center">${x.days}</td>
-      <td style="font-size:13px;color:${remColor};font-weight:500">คงเหลือ ${rem} วัน</td>
-      <td><button class="btn btn-danger" style="font-size:12px;padding:4px 10px" onclick="deleteLeave(${x.id})"><i class="ti ti-trash" aria-hidden="true"></i></button></td>
+      <td style="font-weight:500;text-align:center">${x.days} วัน</td>
+      <td style="color:${rc};font-size:13px;font-weight:500">คงเหลือ ${rem} วัน</td>
+      <td><button class="btn btn-ghost" onclick="deleteLeave(${x.id})"><i class="ti ti-trash" aria-hidden="true"></i></button></td>
     </tr>`;
   }).join('');
+
   const byEmp={};
   hrData.forEach(x=>{if(!byEmp[x.name])byEmp[x.name]={};if(!byEmp[x.name][x.type])byEmp[x.name][x.type]=0;byEmp[x.name][x.type]+=x.days;});
-  document.getElementById('hr-quota-summary').innerHTML=Object.entries(byEmp).map(([emp,types])=>{
-    const rows=Object.entries(LEAVE_QUOTA).map(([type,quota])=>{
-      const used=types[type]||0;
-      const pct=Math.min(100,Math.round((used/quota)*100));
-      const col=pct>=100?'#E24B4A':pct>=70?'#EF9F27':'#1D9E75';
-      return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:13px">
-        <span style="min-width:70px;color:var(--color-text-secondary)">${type}</span>
-        <div class="stock-bar-bg" style="flex:1"><div class="stock-bar" style="width:${pct}%;background:${col}"></div></div>
-        <span style="min-width:80px;color:var(--color-text-primary)">${used}/${quota} วัน</span>
-      </div>`;
-    }).join('');
-    return `<div style="margin-bottom:14px"><div style="font-size:14px;font-weight:500;margin-bottom:8px">${emp}</div>${rows}</div>`;
-  }).join('<hr style="border:none;border-top:0.5px solid var(--color-border-tertiary);margin:1rem 0">');
+  document.getElementById('hr-quota').innerHTML=Object.entries(byEmp).map(([emp,types])=>`
+    <div class="quota-person">
+      <div class="quota-person-name"><i class="ti ti-user-circle" style="font-size:18px" aria-hidden="true"></i>${emp}</div>
+      ${Object.entries(QUOTA).map(([type,quota])=>{
+        const used=types[type]||0;
+        const pct=Math.min(100,Math.round((used/quota)*100));
+        const col=pct>=100?'#E24B4A':pct>=70?'#EF9F27':'#1D9E75';
+        return`<div class="quota-row">
+          <span class="quota-type">${type}</span>
+          <div class="bar-bg" style="flex:1"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div>
+          <span class="quota-count">${used}/${quota} วัน</span>
+        </div>`;
+      }).join('')}
+    </div>`).join('<hr style="border:none;border-top:0.5px solid var(--color-border-tertiary);margin:1rem 0">');
 }
 
-// INIT
 document.getElementById('rd-date').value=new Date().toISOString().slice(0,10);
 document.getElementById('hr-start').value=new Date().toISOString().slice(0,10);
 document.getElementById('hr-end').value=new Date().toISOString().slice(0,10);
-load();
-renderSale(); renderRD(); renderStock(); renderHR();
+load();renderSale();renderRD();renderStock();renderHR();
 </script>
